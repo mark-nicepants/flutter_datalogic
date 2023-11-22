@@ -1,0 +1,21 @@
+name: flutter_datalogic_example
+description: Demonstrates how to use the flutter_datalogic plugin.
+publish_to: 'none'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_datalogic:
+    path: ../
+
+flutter:
+  uses-material-design: true
+
+environment:
+  sdk: ">=3.0.1 <4.0.0"
+  flutter: ">=3.3.0"
