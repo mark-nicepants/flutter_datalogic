@@ -14,30 +14,17 @@ A Flutter package communicate with Datalogic scanners.
 
 # Usage
 
-Import `package:flutter_datalogic/flutter_datalogic.dart`, and use the `SublimeLog.log` to log every information
-you want.
+Initialize the FlutterDatalogic Object and attach a listener to the onScanResult Stream.
 
 Example:
 
 ```dart
 import 'package:flutter_datalogic/flutter_datalogic.dart';
 
-final message = 'Log message';
-SublimeLog.log(message: message, tag: 'Label');
-```
-
-To view all the logs or share it to other.
-
-```dart
-import 'package:flutter_datalogic/flutter_datalogic.dart';
-
-SublimeLog.showLogsPreview(
-  context,
-  quotes: [
-    'First quote',
-    'Second quote'
-  ],
-);
+FlutterDatalogic dl = FlutterDatalogic();
+StreamSubscription onScanSubscription = dl.onScanResult.listen((result) {
+  print(result.data);
+});
 ```
 
 ## Learn more
