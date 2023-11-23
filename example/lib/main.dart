@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datalogic/flutter_datalogic.dart';
@@ -13,19 +14,33 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
+  late FlutterDatalogic fdl;
   late StreamSubscription onScanSubscription;
 
+  var scannerStatus = ScannerStatusType.IDLE;
   var scannedBarcode = 'Press Scan button on device';
 
   @override
   void initState() {
-    FlutterDatalogic dl = FlutterDatalogic();
-    onScanSubscription = dl.onScanResult.listen((result) {
-      setState(() {
-        scannedBarcode = result.data;
-      });
-    });
+    initScanner();
     super.initState();
+  }
+
+  Future<void> initScanner() async {
+    if (Platform.isAndroid) {
+      fdl = FlutterDatalogic();
+      await fdl.initialize();
+      onScanSubscription = fdl.onScannerStatus.listen((result) {
+        setState(() {
+          scannerStatus = result.status;
+        });
+      });
+      onScanSubscription = fdl.onScanResult.listen((result) {
+        setState(() {
+          scannedBarcode = result.data;
+        });
+      });
+    }
   }
 
   @override
@@ -43,6 +58,13 @@ class _ExampleAppState extends State<ExampleApp> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
+              'Status : ${scannerStatus.name}',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 16.0,
+            ),
+            Text(
               scannedBarcode,
               textAlign: TextAlign.center,
             ),
@@ -53,6 +75,5 @@ class _ExampleAppState extends State<ExampleApp> {
     );
   }
 
-  void _scan() {
-  }
+  // void _scan() {}
 }

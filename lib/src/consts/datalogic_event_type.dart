@@ -1,4 +1,5 @@
 enum DatalogicEventType {
+  scannerStatus('SCANNER_STATUS'),
   scanResult('SCAN_RESULT');
 
   final String value;
