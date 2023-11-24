@@ -4,7 +4,7 @@ class DLInterface {
     companion object {
         // Datalogic Actions
         const val ACTION_BROADCAST_RECEIVER = "com.tusaamf.datalogic.decode_action"
-        const val ACTION_SCANNER_STATUS = "com.tusaamf.datalogic.api.SCANNER_STATUS"
+        const val ACTION_SCANNER_STATUS = ".api.SCANNER_STATUS"
         // Datalogic Categories
         const val CATEGORY_BROADCAST_RECEIVER = "com.tusaamf.datalogic.decode_category"
         // Datalogic extras

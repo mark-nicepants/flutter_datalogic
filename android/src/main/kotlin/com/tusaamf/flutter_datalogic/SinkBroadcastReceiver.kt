@@ -19,7 +19,7 @@ class SinkBroadcastReceiver(private var events: EventSink? = null) : BroadcastRe
                 handleScannedBarcode(intent)
             }
 
-            DLInterface.ACTION_SCANNER_STATUS -> {
+            "${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}" -> {
                 if (intent.hasExtra(DLInterface.EXTRA_SCANNER_STATUS)) {
                     intent.getBundleExtra(DLInterface.EXTRA_SCANNER_STATUS)?.let {
                         handleScannerStatus(it)

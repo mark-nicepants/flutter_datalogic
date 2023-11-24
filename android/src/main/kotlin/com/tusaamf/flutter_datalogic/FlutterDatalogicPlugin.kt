@@ -16,8 +16,6 @@ import io.flutter.plugin.common.MethodChannel.Result
 import java.lang.Exception
 import com.datalogic.decode.BarcodeManager
 import com.datalogic.decode.DecodeException
-import com.datalogic.decode.StartListener
-import com.datalogic.decode.StopListener
 import com.datalogic.decode.configuration.IntentDeliveryMode
 import com.datalogic.decode.configuration.ScannerProperties
 import com.datalogic.device.configuration.ConfigException
@@ -70,8 +68,18 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
             }
         } catch (e: Exception) { // Any error?
             when (e) {
-                is ConfigException -> Log.e(LOG_TAG, "Error while retrieving/setting properties: " + e.error_number, e)
-                is DecodeException -> Log.e(LOG_TAG, "Error while retrieving/setting properties: " + e.error_number, e)
+                is ConfigException -> Log.e(
+                    LOG_TAG,
+                    "Error while retrieving/setting properties: " + e.error_number,
+                    e
+                )
+
+                is DecodeException -> Log.e(
+                    LOG_TAG,
+                    "Error while retrieving/setting properties: " + e.error_number,
+                    e
+                )
+
                 else -> Log.e(LOG_TAG, "Other error ", e)
             }
             e.printStackTrace()
@@ -79,10 +87,11 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
 
         try {
             // Register dynamically decode wedge intent broadcast receiver.
-            intentFilter = IntentFilter()
-            intentFilter.addAction(DLInterface.ACTION_SCANNER_STATUS)
-            intentFilter.addAction(DLInterface.ACTION_BROADCAST_RECEIVER)
-            intentFilter.addCategory(DLInterface.CATEGORY_BROADCAST_RECEIVER)
+            intentFilter = IntentFilter().also {
+                it.addAction("${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}")
+                it.addAction(DLInterface.ACTION_BROADCAST_RECEIVER)
+                it.addCategory(DLInterface.CATEGORY_BROADCAST_RECEIVER)
+            }
 
             scanEventChannel =
                 EventChannel(flutterPluginBinding.binaryMessenger, MyChannels.scanChannel)
@@ -91,7 +100,6 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
             commandMethodChannel =
                 MethodChannel(flutterPluginBinding.binaryMessenger, MyChannels.commandChannel)
             commandMethodChannel.setMethodCallHandler(this)
-
         } catch (e: Exception) {
             Log.e(LOG_TAG, "Error while register intent broadcast receiver", e)
             e.printStackTrace()
@@ -112,30 +120,34 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
     }
 
     private fun listenScannerStatus() {
-        val startListener = StartListener {
+        manager?.addStartListener {
             Intent().also { intent ->
                 val bundle = Bundle().also {
-                  it.putString(DLInterface.EXTRA_KEY_VALUE_SCANNER_STATUS, ScannerStatus.SCANNING.toString())
+                    it.putString(
+                        DLInterface.EXTRA_KEY_VALUE_SCANNER_STATUS,
+                        ScannerStatus.SCANNING.toString()
+                    )
                 }
 
-                intent.action = DLInterface.ACTION_SCANNER_STATUS
+                intent.action = "${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}"
                 intent.putExtra(DLInterface.EXTRA_SCANNER_STATUS, bundle)
                 context.sendBroadcast(intent)
             }
         }
-        val stopListener = StopListener {
+        manager?.addStopListener {
             Intent().also { intent ->
                 val bundle = Bundle().also {
-                    it.putString(DLInterface.EXTRA_KEY_VALUE_SCANNER_STATUS, ScannerStatus.IDLE.toString())
+                    it.putString(
+                        DLInterface.EXTRA_KEY_VALUE_SCANNER_STATUS,
+                        ScannerStatus.IDLE.toString()
+                    )
                 }
 
-                intent.action = DLInterface.ACTION_SCANNER_STATUS
+                intent.action = "${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}"
                 intent.putExtra(DLInterface.EXTRA_SCANNER_STATUS, bundle)
                 context.sendBroadcast(intent)
             }
         }
-        manager?.addStartListener(startListener)
-        manager?.addStopListener(stopListener)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {

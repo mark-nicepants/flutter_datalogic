@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.4] - 24th November 2023
+
+* Fix bug listener many times if using this library on different application same times 
+
 ## [1.0.3] - 23th November 2023
 
 * Add listen Scanner status
