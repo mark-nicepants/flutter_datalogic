@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.5] - 28th November 2023
+
+* Set default labelSuffix from [LF] to 'blank' 
+
 ## [1.0.4] - 24th November 2023
 
 * Fix bug listener many times if using this library on different application same times 

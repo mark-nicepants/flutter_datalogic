@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datalogic/flutter_datalogic.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 void main() => runApp(MaterialApp(home: const ExampleApp()));
 
@@ -16,7 +16,7 @@ class ExampleApp extends StatefulWidget {
 
 class _ExampleAppState extends State<ExampleApp> {
   late FlutterDatalogic fdl;
-  late StreamSubscription onScanSubscription;
+  late StreamSubscription onSubscription;
 
   var scannerStatus = ScannerStatusType.IDLE;
   var scannedBarcode = 'Press Scan button on device';
@@ -31,14 +31,13 @@ class _ExampleAppState extends State<ExampleApp> {
     if (Platform.isAndroid) {
       fdl = FlutterDatalogic();
       await fdl.initialize();
-      onScanSubscription = fdl.onScannerStatus.listen((result) {
+      onSubscription = fdl.onScannerStatus.combineLatest(fdl.onScanResult,
+          (scannerStatus, scanResult) {
+        return ScanData(scannerStatus.status, scannerStatus.status == ScannerStatusType.SCANNING ? '' : scanResult.data);
+      }).listen((event) {
         setState(() {
-          scannerStatus = result.status;
-        });
-      });
-      onScanSubscription = fdl.onScanResult.listen((result) {
-        setState(() {
-          scannedBarcode = result.data;
+          scannerStatus = event.scannerStatus;
+          scannedBarcode = event.scannedBarcode;
         });
       });
     }
@@ -46,7 +45,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
   @override
   void dispose() {
-    onScanSubscription.cancel();
+    onSubscription.cancel();
     super.dispose();
   }
 
@@ -76,5 +75,12 @@ class _ExampleAppState extends State<ExampleApp> {
     );
   }
 
-  // void _scan() {}
+// void _scan() {}
+}
+
+class ScanData {
+  ScanData(this.scannerStatus, this.scannedBarcode);
+
+  final ScannerStatusType scannerStatus;
+  final String scannedBarcode;
 }

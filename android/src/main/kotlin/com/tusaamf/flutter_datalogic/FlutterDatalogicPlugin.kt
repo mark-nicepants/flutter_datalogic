@@ -55,13 +55,16 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
 
             configuration?.let {
                 it.ean13.sendChecksum.set(true)
+                // set default labelSuffix from [LF] to ""
+                // https://datalogic.github.io/oemconfig/scanner-settings/#formatting
+                it.format.labelSuffix.set("")
                 // disables KeyboardWedge
                 it.keyboardWedge.enable.set(false)
                 // enable wedge intent
                 it.intentWedge.enable.set(true)
                 // set wedge intent action and category
-                it.intentWedge.action.set(DLInterface.ACTION_BROADCAST_RECEIVER)
-                it.intentWedge.category.set(DLInterface.CATEGORY_BROADCAST_RECEIVER)
+                it.intentWedge.action.set("${context.packageName}${DLInterface.ACTION_BROADCAST_RECEIVER}")
+                it.intentWedge.category.set("${context.packageName}${DLInterface.CATEGORY_BROADCAST_RECEIVER}")
                 // set wedge intent delivery through broadcast
                 it.intentWedge.deliveryMode.set(IntentDeliveryMode.BROADCAST)
                 it.store(manager, false)
@@ -89,8 +92,8 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
             // Register dynamically decode wedge intent broadcast receiver.
             intentFilter = IntentFilter().also {
                 it.addAction("${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}")
-                it.addAction(DLInterface.ACTION_BROADCAST_RECEIVER)
-                it.addCategory(DLInterface.CATEGORY_BROADCAST_RECEIVER)
+                it.addAction("${context.packageName}${DLInterface.ACTION_BROADCAST_RECEIVER}")
+                it.addCategory("${context.packageName}${DLInterface.CATEGORY_BROADCAST_RECEIVER}")
             }
 
             scanEventChannel =
@@ -130,7 +133,7 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
                 }
 
                 intent.action = "${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}"
-                intent.putExtra(DLInterface.EXTRA_SCANNER_STATUS, bundle)
+                intent.putExtra("${context.packageName}${DLInterface.EXTRA_SCANNER_STATUS}", bundle)
                 context.sendBroadcast(intent)
             }
         }
@@ -144,7 +147,7 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
                 }
 
                 intent.action = "${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}"
-                intent.putExtra(DLInterface.EXTRA_SCANNER_STATUS, bundle)
+                intent.putExtra("${context.packageName}${DLInterface.EXTRA_SCANNER_STATUS}", bundle)
                 context.sendBroadcast(intent)
             }
         }
