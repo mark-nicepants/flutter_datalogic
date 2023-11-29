@@ -1,6 +1,6 @@
 name: flutter_datalogic
 description: A Flutter package communicate with Datalogic scanners.
-version: 1.0.5
+version: 1.0.6
 homepage: https://github.com/tusaamf/flutter_datalogic
 
 dependencies:

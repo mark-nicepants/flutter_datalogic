@@ -16,19 +16,14 @@ import io.flutter.plugin.common.MethodChannel.Result
 import java.lang.Exception
 import com.datalogic.decode.BarcodeManager
 import com.datalogic.decode.DecodeException
-import com.datalogic.decode.configuration.IntentDeliveryMode
 import com.datalogic.decode.configuration.ScannerProperties
 import com.datalogic.device.configuration.ConfigException
-import com.tusaamf.flutter_datalogic.const.MyMethods
 import com.tusaamf.flutter_datalogic.const.ScannerStatus
-import io.flutter.plugin.common.MethodChannel
 
 /** FlutterDatalogicPlugin */
 class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
 
     private lateinit var scanEventChannel: EventChannel
-
-    private lateinit var commandMethodChannel: MethodChannel
 
     private var manager: BarcodeManager? = null
 
@@ -43,12 +38,18 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
 
     private lateinit var intentFilter: IntentFilter
 
+    private var scannedBarcode: String = ""
+
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
 
         try {
             // Create a BarcodeManager. It will be used later to change intent delivery modes.
-            manager = BarcodeManager()
+            manager = BarcodeManager().also {
+                it.addReadListener{ result ->
+                    scannedBarcode = result.text
+                }
+            }
 
             // get the current settings from the BarcodeManager
             configuration = ScannerProperties.edit(manager)
@@ -58,17 +59,8 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
                 // set default labelSuffix from [LF] to ""
                 // https://datalogic.github.io/oemconfig/scanner-settings/#formatting
                 it.format.labelSuffix.set("")
-                // disables KeyboardWedge
-                it.keyboardWedge.enable.set(false)
-                // enable wedge intent
-                it.intentWedge.enable.set(true)
-                // set wedge intent action and category
-                it.intentWedge.action.set("${context.packageName}${DLInterface.ACTION_BROADCAST_RECEIVER}")
-                it.intentWedge.category.set("${context.packageName}${DLInterface.CATEGORY_BROADCAST_RECEIVER}")
-                // set wedge intent delivery through broadcast
-                it.intentWedge.deliveryMode.set(IntentDeliveryMode.BROADCAST)
-                it.store(manager, false)
             }
+            listenScannerStatus()
         } catch (e: Exception) { // Any error?
             when (e) {
                 is ConfigException -> Log.e(
@@ -91,18 +83,12 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
         try {
             // Register dynamically decode wedge intent broadcast receiver.
             intentFilter = IntentFilter().also {
-                it.addAction("${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}")
-                it.addAction("${context.packageName}${DLInterface.ACTION_BROADCAST_RECEIVER}")
-                it.addCategory("${context.packageName}${DLInterface.CATEGORY_BROADCAST_RECEIVER}")
+                it.addAction("${context.packageName}${DLInterface.ACTION_SCANNER_INFO}")
             }
 
             scanEventChannel =
                 EventChannel(flutterPluginBinding.binaryMessenger, MyChannels.scanChannel)
             scanEventChannel.setStreamHandler(this)
-
-            commandMethodChannel =
-                MethodChannel(flutterPluginBinding.binaryMessenger, MyChannels.commandChannel)
-            commandMethodChannel.setMethodCallHandler(this)
         } catch (e: Exception) {
             Log.e(LOG_TAG, "Error while register intent broadcast receiver", e)
             e.printStackTrace()
@@ -110,46 +96,33 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        when (call.method) {
-            MyMethods.listenScannerStatus -> {
-                listenScannerStatus()
-                result.success(null)  //  Datalogic does not return responses
-            }
-
-            else -> {
-                result.notImplemented()
-            }
-        }
     }
 
     private fun listenScannerStatus() {
-        manager?.addStartListener {
+        fun sendScannerInfo(status: ScannerStatus, barcode: String) {
             Intent().also { intent ->
                 val bundle = Bundle().also {
                     it.putString(
                         DLInterface.EXTRA_KEY_VALUE_SCANNER_STATUS,
-                        ScannerStatus.SCANNING.toString()
+                        status.toString()
+                    )
+                    it.putString(
+                        DLInterface.EXTRA_KEY_VALUE_SCAN_DATA,
+                        barcode
                     )
                 }
 
-                intent.action = "${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}"
-                intent.putExtra("${context.packageName}${DLInterface.EXTRA_SCANNER_STATUS}", bundle)
+                intent.action = "${context.packageName}${DLInterface.ACTION_SCANNER_INFO}"
+                intent.putExtra("${context.packageName}${DLInterface.EXTRA_SCANNER_INFO}", bundle)
                 context.sendBroadcast(intent)
             }
         }
+        manager?.addStartListener {
+            scannedBarcode = ""
+            sendScannerInfo(ScannerStatus.SCANNING, scannedBarcode)
+        }
         manager?.addStopListener {
-            Intent().also { intent ->
-                val bundle = Bundle().also {
-                    it.putString(
-                        DLInterface.EXTRA_KEY_VALUE_SCANNER_STATUS,
-                        ScannerStatus.IDLE.toString()
-                    )
-                }
-
-                intent.action = "${context.packageName}${DLInterface.ACTION_SCANNER_STATUS}"
-                intent.putExtra("${context.packageName}${DLInterface.EXTRA_SCANNER_STATUS}", bundle)
-                context.sendBroadcast(intent)
-            }
+            sendScannerInfo(ScannerStatus.IDLE, scannedBarcode)
         }
     }
 

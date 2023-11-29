@@ -20,6 +20,8 @@ ScanResult _$ScanResultFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ScanResult {
+  @JsonKey(name: 'status')
+  ScannerStatusType get status => throw _privateConstructorUsedError;
   @JsonKey(name: 'scanData')
   String get data => throw _privateConstructorUsedError;
 
@@ -35,7 +37,9 @@ abstract class $ScanResultCopyWith<$Res> {
           ScanResult value, $Res Function(ScanResult) then) =
       _$ScanResultCopyWithImpl<$Res, ScanResult>;
   @useResult
-  $Res call({@JsonKey(name: 'scanData') String data});
+  $Res call(
+      {@JsonKey(name: 'status') ScannerStatusType status,
+      @JsonKey(name: 'scanData') String data});
 }
 
 /// @nodoc
@@ -51,9 +55,14 @@ class _$ScanResultCopyWithImpl<$Res, $Val extends ScanResult>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? status = null,
     Object? data = null,
   }) {
     return _then(_value.copyWith(
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as ScannerStatusType,
       data: null == data
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
@@ -70,7 +79,9 @@ abstract class _$$ScanResultImplCopyWith<$Res>
       __$$ScanResultImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({@JsonKey(name: 'scanData') String data});
+  $Res call(
+      {@JsonKey(name: 'status') ScannerStatusType status,
+      @JsonKey(name: 'scanData') String data});
 }
 
 /// @nodoc
@@ -84,9 +95,14 @@ class __$$ScanResultImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? status = null,
     Object? data = null,
   }) {
     return _then(_$ScanResultImpl(
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as ScannerStatusType,
       data: null == data
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
@@ -98,18 +114,23 @@ class __$$ScanResultImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ScanResultImpl implements _ScanResult {
-  const _$ScanResultImpl({@JsonKey(name: 'scanData') required this.data});
+  const _$ScanResultImpl(
+      {@JsonKey(name: 'status') required this.status,
+      @JsonKey(name: 'scanData') required this.data});
 
   factory _$ScanResultImpl.fromJson(Map<String, dynamic> json) =>
       _$$ScanResultImplFromJson(json);
 
+  @override
+  @JsonKey(name: 'status')
+  final ScannerStatusType status;
   @override
   @JsonKey(name: 'scanData')
   final String data;
 
   @override
   String toString() {
-    return 'ScanResult(data: $data)';
+    return 'ScanResult(status: $status, data: $data)';
   }
 
   @override
@@ -117,12 +138,13 @@ class _$ScanResultImpl implements _ScanResult {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ScanResultImpl &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.data, data) || other.data == data));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, data);
+  int get hashCode => Object.hash(runtimeType, status, data);
 
   @JsonKey(ignore: true)
   @override
@@ -140,12 +162,16 @@ class _$ScanResultImpl implements _ScanResult {
 
 abstract class _ScanResult implements ScanResult {
   const factory _ScanResult(
-          {@JsonKey(name: 'scanData') required final String data}) =
+          {@JsonKey(name: 'status') required final ScannerStatusType status,
+          @JsonKey(name: 'scanData') required final String data}) =
       _$ScanResultImpl;
 
   factory _ScanResult.fromJson(Map<String, dynamic> json) =
       _$ScanResultImpl.fromJson;
 
+  @override
+  @JsonKey(name: 'status')
+  ScannerStatusType get status;
   @override
   @JsonKey(name: 'scanData')
   String get data;

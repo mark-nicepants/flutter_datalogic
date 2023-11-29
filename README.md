@@ -22,8 +22,8 @@ Example:
 import 'package:flutter_datalogic/flutter_datalogic.dart';
 
 FlutterDatalogic dl = FlutterDatalogic();
-await dw.initialize();
-StreamSubscription onScanSubscription = dl.onScanResult.listen((result) {
+StreamSubscription onScanSubscription = dl.onScannerInfo.listen((result) {
+  print(result.status);
   print(result.data);
 });
 ```

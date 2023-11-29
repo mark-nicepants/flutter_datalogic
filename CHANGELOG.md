@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.6] - 29th November 2023
+
+* Update listen scan via SDK instead of Intent
+
 ## [1.0.5] - 28th November 2023
 
 * Set default labelSuffix from [LF] to 'blank' 

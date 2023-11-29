@@ -3,13 +3,10 @@ package com.tusaamf.flutter_datalogic
 class DLInterface {
     companion object {
         // Datalogic Actions
-        const val ACTION_BROADCAST_RECEIVER = ".datalogic.decode_action"
-        const val ACTION_SCANNER_STATUS = ".api.SCANNER_STATUS"
-        // Datalogic Categories
-        const val CATEGORY_BROADCAST_RECEIVER = ".datalogic.decode_category"
+        const val ACTION_SCANNER_INFO = ".api.SCANNER_INFO"
         // Datalogic extras
-        const val DATALOGIC_SCAN_EXTRA_DATA_STRING = "com.datalogic.decode.intentwedge.barcode_string"
-        const val EXTRA_SCANNER_STATUS = ".datalogic.extra.SCANNER_STATUS"
+        const val EXTRA_SCANNER_INFO = ".datalogic.extra.SCANNER_INFO"
         const val EXTRA_KEY_VALUE_SCANNER_STATUS = "SCANNER_STATUS"
+        const val EXTRA_KEY_VALUE_SCAN_DATA = "SCAN_DATA"
     }
 }

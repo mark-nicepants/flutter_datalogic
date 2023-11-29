@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_datalogic/flutter_datalogic.dart';
-import 'package:stream_transform/stream_transform.dart';
 
 void main() => runApp(MaterialApp(home: const ExampleApp()));
 
@@ -30,14 +29,10 @@ class _ExampleAppState extends State<ExampleApp> {
   Future<void> initScanner() async {
     if (Platform.isAndroid) {
       fdl = FlutterDatalogic();
-      await fdl.initialize();
-      onSubscription = fdl.onScannerStatus.combineLatest(fdl.onScanResult,
-          (scannerStatus, scanResult) {
-        return ScanData(scannerStatus.status, scannerStatus.status == ScannerStatusType.SCANNING ? '' : scanResult.data);
-      }).listen((event) {
+      onSubscription = fdl.onScannerInfo.listen((event) {
         setState(() {
-          scannerStatus = event.scannerStatus;
-          scannedBarcode = event.scannedBarcode;
+          scannerStatus = event.status;
+          scannedBarcode = event.data;
         });
       });
     }
