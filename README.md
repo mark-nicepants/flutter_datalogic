@@ -12,6 +12,45 @@ A Flutter package communicate with Datalogic scanners.
 | :-----: | :-: |
 |   ✅    | ❌  |
 
+# Installation
+
+First, add `flutter_datalogic` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
+
+## Android
+
+Create file name `proguard-rules.pro` in same directory with your `android/app/build.gradle`
+
+```text
+-keep class com.datalogic.cradle.** { *; }
+-keep class com.datalogic.decode.** { *; }
+-keep class com.datalogic.device.** { *; }
+-keep class com.datalogic.extension.** { *; }
+-keep class com.datalogic.softspot.** { *; }
+```
+
+Configure the `buildTypes release` in your `android/app/build.gradle` file.
+
+```groovy
+buildTypes {
+    release {
+        minifyEnabled true
+        shrinkResources true
+        signingConfig signingConfigs.release
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+}
+```
+
+Add config in your `android/app/build.gradle` file.
+
+```xml
+<application>
+    <uses-library
+        android:name="com.datalogic.device"
+        android:required="true" />
+</application>
+```
+
 # Usage
 
 Initialize the FlutterDatalogic Object and attach a listener to the onScanResult Stream.

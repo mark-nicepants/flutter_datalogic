@@ -1,0 +1,5 @@
+-keep class com.datalogic.cradle.** { *; }
+-keep class com.datalogic.decode.** { *; }
+-keep class com.datalogic.device.** { *; }
+-keep class com.datalogic.extension.** { *; }
+-keep class com.datalogic.softspot.** { *; }

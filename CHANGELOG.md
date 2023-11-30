@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.7] - 30th November 2023
+
+* Update README.md and fix example not running on release mode
+
 ## [1.0.6] - 29th November 2023
 
 * Update listen scan via SDK instead of Intent
