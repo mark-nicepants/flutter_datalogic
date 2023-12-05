@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.8] - 5th December 2023
+
+* Fix the custom settings not save
+
 ## [1.0.7] - 30th November 2023
 
 * Update README.md and fix example not running on release mode

@@ -16,6 +16,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import java.lang.Exception
 import com.datalogic.decode.BarcodeManager
 import com.datalogic.decode.DecodeException
+import com.datalogic.decode.configuration.ScanMode
 import com.datalogic.decode.configuration.ScannerProperties
 import com.datalogic.device.configuration.ConfigException
 import com.tusaamf.flutter_datalogic.const.ScannerStatus
@@ -55,10 +56,20 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
             configuration = ScannerProperties.edit(manager)
 
             configuration?.let {
+                // set scan mode only 'single'
+                // https://datalogic.github.io/oemconfig/scanner-settings/#scanner-options
+                it.scannerOptions.scanMode.set(ScanMode.SINGLE)
+                // set multi scan to false
+                // https://datalogic.github.io/oemconfig/scanner-settings/#multi-scan
+                it.multiScan.enable.set(false)
+                // include the checksum in the label transmission
+                // https://datalogic.github.io/oemconfig/scanner-settings/#ean-13
                 it.ean13.sendChecksum.set(true)
                 // set default labelSuffix from [LF] to ""
                 // https://datalogic.github.io/oemconfig/scanner-settings/#formatting
                 it.format.labelSuffix.set("")
+                // save settings
+                it.store(manager, false)
             }
             listenScannerStatus()
         } catch (e: Exception) { // Any error?
