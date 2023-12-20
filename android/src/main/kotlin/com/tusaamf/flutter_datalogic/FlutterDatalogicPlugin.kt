@@ -91,6 +91,12 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
             e.printStackTrace()
         }
 
+        registerIntentBroadcastReceiver(flutterPluginBinding)
+
+        configureMethodCallHandler(flutterPluginBinding)
+    }
+
+    private fun registerIntentBroadcastReceiver(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         try {
             // Register dynamically decode wedge intent broadcast receiver.
             intentFilter = IntentFilter().also {
@@ -106,6 +112,22 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
         }
     }
 
+    private fun configureMethodCallHandler(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        MethodChannel(flutterPluginBinding.binaryMessenger, MyChannels.methodChannel).setMethodCallHandler {
+                call, result ->
+            {
+                Log.i(LOG_TAG, "MethodChannel Called : " + call.method )
+
+                if (call.method == "startTrigger") {
+                    manager?.pressTrigger()
+                }
+
+                if (call.method == "stopTrigger") {
+                    manager?.releaseTrigger()
+                }
+            }
+        }
+    }
     override fun onMethodCall(call: MethodCall, result: Result) {
     }
 
