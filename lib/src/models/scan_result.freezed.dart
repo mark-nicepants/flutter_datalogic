@@ -134,7 +134,7 @@ class _$ScanResultImpl implements _ScanResult {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ScanResultImpl &&
