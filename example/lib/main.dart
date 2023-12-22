@@ -19,6 +19,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
   var scannerStatus = ScannerStatusType.IDLE;
   var scannedBarcode = 'Press Scan button on device';
+  bool _hasBeenPressed = false;
 
   @override
   void initState() {
@@ -36,6 +37,22 @@ class _ExampleAppState extends State<ExampleApp> {
         });
       });
     }
+  }
+
+  void startScanning() async {
+    fdl.startScanning();
+
+    setState(() {
+      _hasBeenPressed = true;
+    });
+  }
+
+  void stopScanning() async {
+    fdl.stopScanning();
+
+    setState(() {
+      _hasBeenPressed = false;
+    });
   }
 
   @override
@@ -63,6 +80,26 @@ class _ExampleAppState extends State<ExampleApp> {
               scannedBarcode,
               textAlign: TextAlign.center,
             ),
+            GestureDetector(
+              onTapDown: (_) {
+                startScanning();
+              },
+              onTapUp: (_) {
+                stopScanning();
+              },
+              onPanEnd: (_) {
+                stopScanning();
+              },
+              child: Container(
+                padding: const EdgeInsets.all(60.0),
+                decoration: BoxDecoration(
+                  color: _hasBeenPressed ? Colors.amber : Colors.lightBlue,
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(width: 5),
+                ),
+                child: const Text('Scan'),
+              ),
+            )
             // TextButton(onPressed: _scan, child: Text('Scan')),
           ],
         ),

@@ -11,6 +11,7 @@ import com.tusaamf.flutter_datalogic.const.MyChannels
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.lang.Exception
@@ -25,6 +26,7 @@ import com.tusaamf.flutter_datalogic.const.ScannerStatus
 class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler {
 
     private lateinit var scanEventChannel: EventChannel
+    private lateinit var commandMethodChannel: MethodChannel
 
     private var manager: BarcodeManager? = null
 
@@ -91,6 +93,12 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
             e.printStackTrace()
         }
 
+        registerIntentBroadcastReceiver(flutterPluginBinding)
+
+        configureMethodCallHandler(flutterPluginBinding)
+    }
+
+    private fun registerIntentBroadcastReceiver(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         try {
             // Register dynamically decode wedge intent broadcast receiver.
             intentFilter = IntentFilter().also {
@@ -106,7 +114,26 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
         }
     }
 
+    private fun configureMethodCallHandler(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        commandMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, MyChannels.commandChannel)
+        commandMethodChannel.setMethodCallHandler(this)
+    }
     override fun onMethodCall(call: MethodCall, result: Result) {
+        when (call.method) {
+            "startScanning" -> {
+                manager?.pressTrigger()
+                result.success(null)
+            }
+
+            "stopScanning" -> {
+                manager?.releaseTrigger()
+                result.success(null)
+            }
+
+            else -> {
+                result.notImplemented()
+            }
+        }
     }
 
     private fun listenScannerStatus() {
@@ -141,6 +168,7 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
         for (receiver in registeredReceivers) {
             context.unregisterReceiver(receiver)
         }
+        commandMethodChannel.setMethodCallHandler(null)
         scanEventChannel.setStreamHandler(null)
     }
 

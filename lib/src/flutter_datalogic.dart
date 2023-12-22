@@ -9,6 +9,8 @@ class FlutterDatalogic {
   late final Stream<ScanResult> _scanResultStream;
 
   final EventChannel _eventChannel = EventChannel('channels/datalogic_scan');
+  final MethodChannel _methodChannel =
+      MethodChannel('channels/datalogic_command');
 
   /// Subscribe to a stream of [ScanResult]s
   Stream<ScanResult> get onScannerInfo => _scanResultStream;
@@ -29,5 +31,21 @@ class FlutterDatalogic {
         .where((event) =>
             DatalogicEventType.fromMap(event) == DatalogicEventType.scannerInfo)
         .map(ScanResult.fromJson);
+  }
+
+  Future<void> startScanning() async {
+    try {
+      await _methodChannel.invokeMethod('startScanning');
+    } on PlatformException catch (e) {
+      "Failed to get startScanning: '${e.message}'.";
+    }
+  }
+
+  Future<void> stopScanning() async {
+    try {
+      await _methodChannel.invokeMethod('stopScanning');
+    } on PlatformException catch (e) {
+      "Failed to get stopScanning: '${e.message}'.";
+    }
   }
 }
