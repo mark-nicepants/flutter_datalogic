@@ -41,13 +41,13 @@ buildTypes {
 }
 ```
 
-Add config in your `android/app/build.gradle` file.
+Add config in your `android/app/src/main/AndroidManifest.xml` file.
 
 ```xml
 <application>
     <uses-library
         android:name="com.datalogic.device"
-        android:required="true" />
+        android:required="false" />
 </application>
 ```
 
