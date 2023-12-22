@@ -3,7 +3,6 @@ include: package:lints/core.yaml
 analyzer:
   exclude:
     - "**/*.g.dart"
-    - "**/*.freezed.dart"
     - "**/*.mocks.dart"
     - "build/**"
   language:
