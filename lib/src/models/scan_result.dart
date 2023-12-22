@@ -1,19 +1,6 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'scan_result.g.dart';
-
-part 'scan_result.freezed.dart';
-
-@freezed
-class ScanResult with _$ScanResult {
-  const factory ScanResult({
-    @JsonKey(name: 'status') required ScannerStatusType status,
-    @JsonKey(name: 'scanData') required String data,
-  }) = _ScanResult;
-
-  factory ScanResult.fromJson(Map<String, dynamic> json) =>
-      _$ScanResultFromJson(json);
-}
 
 enum ScannerStatusType {
   /// Scanner has emitted the scan beam and scanning is in progress
@@ -21,4 +8,23 @@ enum ScannerStatusType {
 
   /// Scanner is in one of the following states: enabled but not yet in the waiting state, in the suspended state by an intent (e.g. SUSPEND_PLUGIN) or disabled due to the hardware trigger
   IDLE,
+}
+
+@JsonSerializable()
+class ScanResult {
+  ScanResult({
+    required this.status,
+    required this.data,
+  });
+
+  @JsonKey(name: 'status')
+  final ScannerStatusType status;
+
+  @JsonKey(name: 'scanData')
+  final String data;
+
+  factory ScanResult.fromJson(Map<String, dynamic> json) =>
+      _$ScanResultFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ScanResultToJson(this);
 }

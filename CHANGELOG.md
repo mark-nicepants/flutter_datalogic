@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.9] - 22th December 2023
+
+* Add method to trigger start and stop scanner
+* Update docs and remove use 'freezed' package
+
 ## [1.0.8] - 5th December 2023
 
 * Fix the custom settings not save

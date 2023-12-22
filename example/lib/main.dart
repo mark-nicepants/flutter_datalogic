@@ -80,6 +80,9 @@ class _ExampleAppState extends State<ExampleApp> {
               scannedBarcode,
               textAlign: TextAlign.center,
             ),
+            SizedBox(
+              height: 16.0,
+            ),
             GestureDetector(
               onTapDown: (_) {
                 startScanning();
@@ -91,13 +94,19 @@ class _ExampleAppState extends State<ExampleApp> {
                 stopScanning();
               },
               child: Container(
-                padding: const EdgeInsets.all(60.0),
+                padding: const EdgeInsets.all(40.0),
                 decoration: BoxDecoration(
                   color: _hasBeenPressed ? Colors.amber : Colors.lightBlue,
                   borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(width: 5),
                 ),
-                child: const Text('Scan'),
+                child: const Text(
+                  'Scan',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                  ),
+                ),
               ),
             )
             // TextButton(onPressed: _scan, child: Text('Scan')),
