@@ -20,6 +20,8 @@ import com.datalogic.decode.DecodeException
 import com.datalogic.decode.configuration.ScanMode
 import com.datalogic.decode.configuration.ScannerProperties
 import com.datalogic.device.configuration.ConfigException
+import com.datalogic.device.info.BarcodeScannerType
+import com.datalogic.device.info.SYSTEM
 import com.tusaamf.flutter_datalogic.const.ScannerStatus
 
 /** FlutterDatalogicPlugin */
@@ -118,6 +120,11 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
         commandMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, MyChannels.commandChannel)
         commandMethodChannel.setMethodCallHandler(this)
     }
+
+    private fun hasScanner(): Boolean {
+        return SYSTEM.BARCODE_SCANNER_TYPE != null && SYSTEM.BARCODE_SCANNER_TYPE != BarcodeScannerType.NONE
+    }
+
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "startScanning" -> {
@@ -128,6 +135,10 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
             "stopScanning" -> {
                 manager?.releaseTrigger()
                 result.success(null)
+            }
+
+            "hasScanner" -> {
+                result.success(hasScanner())
             }
 
             else -> {
