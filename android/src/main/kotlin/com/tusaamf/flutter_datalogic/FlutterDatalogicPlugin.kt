@@ -69,6 +69,7 @@ class FlutterDatalogicPlugin : FlutterPlugin, MethodCallHandler, EventChannel.St
                 // include the checksum in the label transmission
                 // https://datalogic.github.io/oemconfig/scanner-settings/#ean-13
                 it.ean13.sendChecksum.set(true)
+                it.ean8.sendChecksum.set(true)
                 // set default labelSuffix from [LF] to ""
                 // https://datalogic.github.io/oemconfig/scanner-settings/#formatting
                 it.format.labelSuffix.set("")
